@@ -25,35 +25,36 @@ main :: IO ()
 main = xmonad
      . ewmhFullscreen
      . ewmh
-     . withEasySB (statusBarProp "xmobar" (pure myXmobarPP)) defToggleStrutsKey
+     . withEasySB (statusBarProp "/home/apohorai/.config/xmobar/xmobar" (pure myXmobarPP)) defToggleStrutsKey
      $ myConfig
 
 myConfig = def
-    { modMask    = mod4Mask 
-    , layoutHook = myLayout
-    , manageHook = myManageHook
+    { modMask    = mod4Mask      -- Rebind Mod to the Super key
+    , layoutHook = myLayout      -- Use custom layouts
+    , manageHook = myManageHook  -- Match on certain windows
     , terminal   = myTerminal
     }
   `additionalKeysP`
     [ 
-     ("M-S-=", unGrab *> spawn "scrot -s")
+      ("M-S-z", spawn "xscreensaver-command -lock")
+    , ("M-S-=", unGrab *> spawn "scrot -s")
+    , ("M-c", spawn "chromium")
     ]
 
 myTerminal :: String
 myTerminal = "kitty"
 
-
 myManageHook :: ManageHook
 myManageHook = composeAll
-    [ 
-     isDialog            --> doFloat
+    [ className =? "Gimp" --> doFloat
+    , isDialog            --> doFloat
     ]
 
 myLayout = 
-  master |||
-  full ||| 
-  threeRow |||
-  threeCol
+    master |||
+    full ||| 
+    threeRow |||
+    threeCol
   where
     master    = 
       withBorder 1 $
